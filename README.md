@@ -9,7 +9,7 @@ Instead of dealing with the complexity of systems like Kafka, this project focus
 ## 📐 Architecture
 
 ```
-src/
+src/main/java/
 ├── Main.java                          # CLI entry point
 ├── model/
 │   └── DeliveryOrder.java             # Record with orderId, destination, Status enum
@@ -52,30 +52,40 @@ src/
 | Total time | **~10 ms** | **~20 sec** | **~2.5 sec** |
 | Throughput | ~10,000/sec | 5/sec | ~4,000/sec |
 
-## 🛠️ How to Run
+## 🛠️ How to Build & Run
 
 ### Prerequisites
-- **JDK 17+** for Phase 1 & 2
-- **JDK 21+** for Phase 3
+- **JDK 17+** (JDK 21+ for Phase 3)
+- **Maven 3.8+**
 
-### Compile & Run
+### Using Maven (Recommended)
+
+```bash
+# Build the project
+mvn clean compile
+
+# Run Phase 1
+mvn exec:java -Dexec.arguments="1"
+
+# Run Phase 2
+mvn exec:java -Dexec.arguments="2"
+
+# Run both Phase 1 & 2 sequentially
+mvn exec:java -Dexec.arguments="all"
+
+# Run Phase 3 (when on JDK 21+)
+mvn exec:java -Dexec.mainClass="runner.Phase3Runner"
+```
+
+### Or Compile & Run Manually
 
 ```bash
 # Compile (Phase 1 & 2)
-javac -encoding UTF-8 -d out src/model/DeliveryOrder.java src/state/OrderStateManager.java src/task/DeliveryTask.java src/dispatcher/RouteDispatcher.java src/runner/Phase1Runner.java src/runner/Phase2Runner.java src/Main.java
+javac -encoding UTF-8 -d target/classes $(find src/main/java -name "*.java" ! -name "Phase3Runner.java")
 
-# Run individual phases
-java -cp out runner.Phase1Runner
-java -cp out runner.Phase2Runner
-
-# Use the CLI menu
-java -cp out Main 1
-java -cp out Main 2
-java -cp out Main all
-
-# Phase 3 (JDK 21+ required)
-javac -encoding UTF-8 -d out src/model/DeliveryOrder.java src/state/OrderStateManager.java src/task/DeliveryTask.java src/dispatcher/RouteDispatcher.java src/runner/Phase3Runner.java
-java -cp out runner.Phase3Runner
+# Run via Java CLI
+java -cp target/classes Main 1
+java -cp target/classes Main 2
 ```
 
 ## 🔑 Key Concurrency Concepts
